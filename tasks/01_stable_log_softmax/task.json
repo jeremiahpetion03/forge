@@ -1,0 +1,6 @@
+{
+  "title": "Numerically stable log-softmax",
+  "difficulty": "easy",
+  "skills": ["numerical stability", "overflow/underflow", "broadcasting", "masking"],
+  "time_limit_s": 30
+}

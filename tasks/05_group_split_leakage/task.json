@@ -1,0 +1,6 @@
+{
+  "title": "Leak-free train/validation split",
+  "difficulty": "easy",
+  "skills": ["evaluation methodology", "data leakage", "reproducibility"],
+  "time_limit_s": 30
+}

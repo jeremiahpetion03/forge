@@ -1,0 +1,6 @@
+{
+  "title": "KV-cache attention for incremental decoding",
+  "difficulty": "medium",
+  "skills": ["inference optimization", "attention", "algorithmic complexity", "numerical stability"],
+  "time_limit_s": 90
+}

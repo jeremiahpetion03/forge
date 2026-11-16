@@ -1,0 +1,6 @@
+{
+  "title": "Pairwise distances under a memory budget",
+  "difficulty": "medium",
+  "skills": ["memory optimization", "vectorization", "catastrophic cancellation"],
+  "time_limit_s": 60
+}

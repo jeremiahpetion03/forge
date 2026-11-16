@@ -1,0 +1,13 @@
+[project]
+name = "forge"
+version = "0.1.0"
+description = "Build, solve, and grade ML engineering tasks, and prove the graders work: every task's reference must pass, and its starter code and planted mutants must fail."
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.26"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

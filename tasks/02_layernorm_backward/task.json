@@ -1,0 +1,6 @@
+{
+  "title": "LayerNorm backward pass",
+  "difficulty": "medium",
+  "skills": ["backpropagation", "matrix calculus", "gradient checking"],
+  "time_limit_s": 60
+}

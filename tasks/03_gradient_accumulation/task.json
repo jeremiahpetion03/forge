@@ -1,0 +1,6 @@
+{
+  "title": "Gradient accumulation over uneven micro-batches",
+  "difficulty": "easy",
+  "skills": ["training loops", "loss scaling", "memory limits"],
+  "time_limit_s": 30
+}

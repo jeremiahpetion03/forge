@@ -1,0 +1,196 @@
+[
+  {
+    "task": "01_stable_log_softmax",
+    "title": "Numerically stable log-softmax",
+    "n_checks": 6,
+    "reference_passes": true,
+    "not_flaky": true,
+    "starter_fails": true,
+    "starter_failed_checks": [
+      "finite and exact for huge logits (1e4)",
+      "finite and exact for very negative logits (-1e4)",
+      "float32 stays float32 and survives logits that overflow exp"
+    ],
+    "mutants": {
+      "ignores_axis": [
+        "respects the axis argument on 3-D input"
+      ],
+      "no_keepdims": [
+        "matches reference on ordinary logits",
+        "finite and exact for huge logits (1e4)",
+        "finite and exact for very negative logits (-1e4)",
+        "float32 stays float32 and survives logits that overflow exp",
+        "masked (-inf) entries give exactly -inf, never NaN",
+        "respects the axis argument on 3-D input"
+      ],
+      "subtract_mean": [
+        "float32 stays float32 and survives logits that overflow exp",
+        "masked (-inf) entries give exactly -inf, never NaN"
+      ],
+      "upcasts_float32": [
+        "float32 stays float32 and survives logits that overflow exp"
+      ]
+    },
+    "reference_seconds": 0.035,
+    "problems": [],
+    "valid": true
+  },
+  {
+    "task": "02_layernorm_backward",
+    "title": "LayerNorm backward pass",
+    "n_checks": 6,
+    "reference_passes": true,
+    "not_flaky": true,
+    "starter_fails": true,
+    "starter_failed_checks": [
+      "all gradients match finite differences (2-D)",
+      "all gradients match finite differences (3-D batch)",
+      "correct when variance is comparable to eps",
+      "dx sums to zero along the normalized axis (shift invariance)"
+    ],
+    "mutants": {
+      "forgets_eps": [
+        "all gradients match finite differences (2-D)",
+        "all gradients match finite differences (3-D batch)",
+        "correct when variance is comparable to eps"
+      ],
+      "in_place_scaling": [
+        "does not modify its inputs"
+      ],
+      "sums_first_axis_only": [
+        "output shapes for 2-D and 3-D input",
+        "all gradients match finite differences (3-D batch)"
+      ],
+      "unbiased_variance": [
+        "all gradients match finite differences (2-D)",
+        "all gradients match finite differences (3-D batch)",
+        "correct when variance is comparable to eps"
+      ]
+    },
+    "reference_seconds": 0.047,
+    "problems": [],
+    "valid": true
+  },
+  {
+    "task": "03_gradient_accumulation",
+    "title": "Gradient accumulation over uneven micro-batches",
+    "n_checks": 5,
+    "reference_passes": true,
+    "not_flaky": true,
+    "starter_fails": true,
+    "starter_failed_checks": [
+      "uneven micro-batches (dataset not a multiple of batch size)",
+      "empty micro-batches are skipped, not averaged in"
+    ],
+    "mutants": {
+      "concatenates_everything": [
+        "never materializes more than one micro-batch"
+      ],
+      "divides_by_batch_count": [
+        "uneven micro-batches (dataset not a multiple of batch size)",
+        "empty micro-batches are skipped, not averaged in"
+      ],
+      "sum_not_mean": [
+        "equal-sized micro-batches",
+        "uneven micro-batches (dataset not a multiple of batch size)",
+        "empty micro-batches are skipped, not averaged in"
+      ]
+    },
+    "reference_seconds": 0.028,
+    "problems": [],
+    "valid": true
+  },
+  {
+    "task": "04_kv_cache_attention",
+    "title": "KV-cache attention for incremental decoding",
+    "n_checks": 5,
+    "reference_passes": true,
+    "not_flaky": true,
+    "starter_fails": true,
+    "starter_failed_checks": [
+      "at least 3x faster than re-projecting the history (800 steps)"
+    ],
+    "mutants": {
+      "excludes_current_token": [
+        "first step returns that token's value vector",
+        "matches full causal attention at every step",
+        "stable when attention scores are large",
+        "at least 3x faster than re-projecting the history (800 steps)"
+      ],
+      "missing_scale": [
+        "matches full causal attention at every step",
+        "at least 3x faster than re-projecting the history (800 steps)"
+      ],
+      "shared_class_state": [
+        "two caches used at the same time do not interfere",
+        "at least 3x faster than re-projecting the history (800 steps)"
+      ],
+      "unstable_softmax": [
+        "stable when attention scores are large",
+        "at least 3x faster than re-projecting the history (800 steps)"
+      ]
+    },
+    "reference_seconds": 0.775,
+    "problems": [],
+    "valid": true
+  },
+  {
+    "task": "05_group_split_leakage",
+    "title": "Leak-free train/validation split",
+    "n_checks": 6,
+    "reference_passes": true,
+    "not_flaky": true,
+    "starter_fails": true,
+    "starter_failed_checks": [
+      "no user appears in both train and validation"
+    ],
+    "mutants": {
+      "lowest_ids_first": [
+        "different seeds give different splits",
+        "user selection does not depend on id order"
+      ],
+      "overlapping_indices": [
+        "train and validation partition the rows exactly",
+        "no user appears in both train and validation"
+      ],
+      "unseeded": [
+        "same seed reproduces the split exactly"
+      ],
+      "user_fraction_not_row_fraction": [
+        "validation size within 0.05 of the requested fraction of rows"
+      ]
+    },
+    "reference_seconds": 0.025,
+    "problems": [],
+    "valid": true
+  },
+  {
+    "task": "06_memory_bounded_distances",
+    "title": "Pairwise distances under a memory budget",
+    "n_checks": 5,
+    "reference_passes": true,
+    "not_flaky": true,
+    "starter_fails": true,
+    "starter_failed_checks": [
+      "peak extra memory under 3x the output size"
+    ],
+    "mutants": {
+      "centers_in_place": [
+        "self-distance ~0 and values accurate far from the origin",
+        "does not modify its inputs"
+      ],
+      "no_centering": [
+        "self-distance ~0 and values accurate far from the origin"
+      ],
+      "no_clamp": [
+        "no negative distances when points are far from the origin"
+      ],
+      "out_of_place_temporaries": [
+        "peak extra memory under 3x the output size"
+      ]
+    },
+    "reference_seconds": 0.044,
+    "problems": [],
+    "valid": true
+  }
+]
