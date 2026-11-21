@@ -1,0 +1,6 @@
+{
+  "title": "nDCG@k for ranking and retrieval evaluation",
+  "difficulty": "medium",
+  "skills": ["ranking metrics", "retrieval evaluation", "vectorization", "tie-breaking", "edge cases"],
+  "time_limit_s": 60
+}

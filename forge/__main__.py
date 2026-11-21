@@ -3,6 +3,7 @@
     python -m forge list                          list tasks
     python -m forge grade <task> <solution.py>    grade a solution
     python -m forge validate [--runs 3]           validate every task, write VALIDATION.md
+    python -m forge check-report                  fail if validation.json is stale
 """
 
 from __future__ import annotations
@@ -12,6 +13,7 @@ import json
 import sys
 from pathlib import Path
 
+from . import manifest
 from .runner import ROOT, run, task_path
 from .validate import list_tasks, validate_all, write_reports
 
@@ -43,6 +45,19 @@ def cmd_validate(args) -> int:
     return 0 if all(r.valid for r in reports) else 1
 
 
+def cmd_check_report(args) -> int:
+    path = Path(args.report)
+    if not path.exists():
+        print(f"no report at {path}; run: python -m forge validate --runs 10")
+        return 1
+    stale = manifest.stale_tasks(json.loads(path.read_text(encoding="utf-8")), list_tasks())
+    if stale:
+        print(f"{path.name} is stale for: {', '.join(stale)}. Re-run: python -m forge validate --runs 10")
+        return 1
+    print(f"{path.name} matches every task's current files")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="forge", description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -56,6 +71,9 @@ def main(argv: list[str] | None = None) -> int:
     v.add_argument("--runs", type=int, default=3)
     v.add_argument("tasks", nargs="*")
     v.set_defaults(fn=cmd_validate)
+    c = sub.add_parser("check-report")
+    c.add_argument("--report", default=str(ROOT / "validation.json"))
+    c.set_defaults(fn=cmd_check_report)
     args = p.parse_args(argv)
     return args.fn(args)
 

@@ -23,6 +23,8 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install numpy pytest
+      - name: Committed report matches the task files
+        run: python -m forge check-report
       - name: Harness tests (timeouts, crashes, broken-task detection, every task valid)
         run: pytest -v
       - name: Validate every task (10 runs each) and regenerate the report

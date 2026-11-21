@@ -1,0 +1,6 @@
+{
+  "title": "Leak-free feature preprocessing",
+  "difficulty": "medium",
+  "skills": ["feature engineering", "train/serve skew", "data leakage", "missing values", "categorical encoding"],
+  "time_limit_s": 60
+}

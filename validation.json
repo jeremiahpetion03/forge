@@ -1,196 +1,338 @@
-[
-  {
-    "task": "01_stable_log_softmax",
-    "title": "Numerically stable log-softmax",
-    "n_checks": 6,
-    "reference_passes": true,
-    "not_flaky": true,
-    "starter_fails": true,
-    "starter_failed_checks": [
-      "finite and exact for huge logits (1e4)",
-      "finite and exact for very negative logits (-1e4)",
-      "float32 stays float32 and survives logits that overflow exp"
-    ],
-    "mutants": {
-      "ignores_axis": [
-        "respects the axis argument on 3-D input"
-      ],
-      "no_keepdims": [
-        "matches reference on ordinary logits",
+{
+  "manifest": {
+    "runs": 10,
+    "python": "3.15.2",
+    "numpy": "2.5.5",
+    "platform": "Windows AMD64",
+    "git_commit": "abcaca57fe40d5d9a12d16564ec427fe465044a9",
+    "git_dirty": true,
+    "task_sha256": {
+      "01_stable_log_softmax": "70876167915e4d4cceab4a634b583ac92a137ee740c12b93f2ef449a8764cd8d",
+      "02_layernorm_backward": "dd622db8cf852dca31e7cc54ea94cbaca62e505881fd7486974944f50d4892ec",
+      "03_gradient_accumulation": "df63aeb4ea1578241f3d8f8a9d074b6f53c5b66ce82b69ae300f288cfc1c5336",
+      "04_kv_cache_attention": "53f430b7092f23c122c1e7b1f3b03e2e939b13ca62ef3a37e63b1d96234c4c1f",
+      "05_group_split_leakage": "f7f1422002f3fe19848651d98c28a186affa944c223193c1257ea3be04c6605f",
+      "06_memory_bounded_distances": "76a5e29d6a361a4d645e180dcc378989adced114168e36270da6f04a341183d7",
+      "07_ndcg_ranking_eval": "6a111bd46f80cdce486c4e868c88cbc6110a7840a866f6883c4ad832d6e050ab",
+      "08_leak_free_features": "387596b051fbb959786e72476106f89e6ee7498bc528a5ec98efbc9e24864fb5",
+      "09_tiled_attention": "5fca9426c5f13a0417b91b6569ccf601ee48ba74d4bb0ad012d7a2eb3afe15ed"
+    }
+  },
+  "tasks": [
+    {
+      "task": "01_stable_log_softmax",
+      "title": "Numerically stable log-softmax",
+      "n_checks": 6,
+      "reference_passes": true,
+      "not_flaky": true,
+      "starter_fails": true,
+      "starter_failed_checks": [
         "finite and exact for huge logits (1e4)",
         "finite and exact for very negative logits (-1e4)",
-        "float32 stays float32 and survives logits that overflow exp",
-        "masked (-inf) entries give exactly -inf, never NaN",
-        "respects the axis argument on 3-D input"
-      ],
-      "subtract_mean": [
-        "float32 stays float32 and survives logits that overflow exp",
-        "masked (-inf) entries give exactly -inf, never NaN"
-      ],
-      "upcasts_float32": [
         "float32 stays float32 and survives logits that overflow exp"
-      ]
+      ],
+      "mutants": {
+        "ignores_axis": [
+          "respects the axis argument on 3-D input"
+        ],
+        "no_keepdims": [
+          "matches reference on ordinary logits",
+          "finite and exact for huge logits (1e4)",
+          "finite and exact for very negative logits (-1e4)",
+          "float32 stays float32 and survives logits that overflow exp",
+          "masked (-inf) entries give exactly -inf, never NaN",
+          "respects the axis argument on 3-D input"
+        ],
+        "subtract_mean": [
+          "float32 stays float32 and survives logits that overflow exp",
+          "masked (-inf) entries give exactly -inf, never NaN"
+        ],
+        "upcasts_float32": [
+          "float32 stays float32 and survives logits that overflow exp"
+        ]
+      },
+      "reference_seconds": 0.35,
+      "problems": [],
+      "valid": true
     },
-    "reference_seconds": 0.035,
-    "problems": [],
-    "valid": true
-  },
-  {
-    "task": "02_layernorm_backward",
-    "title": "LayerNorm backward pass",
-    "n_checks": 6,
-    "reference_passes": true,
-    "not_flaky": true,
-    "starter_fails": true,
-    "starter_failed_checks": [
-      "all gradients match finite differences (2-D)",
-      "all gradients match finite differences (3-D batch)",
-      "correct when variance is comparable to eps",
-      "dx sums to zero along the normalized axis (shift invariance)"
-    ],
-    "mutants": {
-      "forgets_eps": [
+    {
+      "task": "02_layernorm_backward",
+      "title": "LayerNorm backward pass",
+      "n_checks": 6,
+      "reference_passes": true,
+      "not_flaky": true,
+      "starter_fails": true,
+      "starter_failed_checks": [
         "all gradients match finite differences (2-D)",
         "all gradients match finite differences (3-D batch)",
-        "correct when variance is comparable to eps"
+        "correct when variance is comparable to eps",
+        "dx sums to zero along the normalized axis (shift invariance)"
       ],
-      "in_place_scaling": [
-        "does not modify its inputs"
-      ],
-      "sums_first_axis_only": [
-        "output shapes for 2-D and 3-D input",
-        "all gradients match finite differences (3-D batch)"
-      ],
-      "unbiased_variance": [
-        "all gradients match finite differences (2-D)",
-        "all gradients match finite differences (3-D batch)",
-        "correct when variance is comparable to eps"
-      ]
+      "mutants": {
+        "forgets_eps": [
+          "all gradients match finite differences (2-D)",
+          "all gradients match finite differences (3-D batch)",
+          "correct when variance is comparable to eps"
+        ],
+        "in_place_scaling": [
+          "does not modify its inputs"
+        ],
+        "sums_first_axis_only": [
+          "output shapes for 2-D and 3-D input",
+          "all gradients match finite differences (3-D batch)"
+        ],
+        "unbiased_variance": [
+          "all gradients match finite differences (2-D)",
+          "all gradients match finite differences (3-D batch)",
+          "correct when variance is comparable to eps"
+        ]
+      },
+      "reference_seconds": 0.384,
+      "problems": [],
+      "valid": true
     },
-    "reference_seconds": 0.047,
-    "problems": [],
-    "valid": true
-  },
-  {
-    "task": "03_gradient_accumulation",
-    "title": "Gradient accumulation over uneven micro-batches",
-    "n_checks": 5,
-    "reference_passes": true,
-    "not_flaky": true,
-    "starter_fails": true,
-    "starter_failed_checks": [
-      "uneven micro-batches (dataset not a multiple of batch size)",
-      "empty micro-batches are skipped, not averaged in"
-    ],
-    "mutants": {
-      "concatenates_everything": [
-        "never materializes more than one micro-batch"
-      ],
-      "divides_by_batch_count": [
+    {
+      "task": "03_gradient_accumulation",
+      "title": "Gradient accumulation over uneven micro-batches",
+      "n_checks": 5,
+      "reference_passes": true,
+      "not_flaky": true,
+      "starter_fails": true,
+      "starter_failed_checks": [
         "uneven micro-batches (dataset not a multiple of batch size)",
         "empty micro-batches are skipped, not averaged in"
       ],
-      "sum_not_mean": [
-        "equal-sized micro-batches",
-        "uneven micro-batches (dataset not a multiple of batch size)",
-        "empty micro-batches are skipped, not averaged in"
-      ]
+      "mutants": {
+        "concatenates_everything": [
+          "never materializes more than one micro-batch"
+        ],
+        "divides_by_batch_count": [
+          "uneven micro-batches (dataset not a multiple of batch size)",
+          "empty micro-batches are skipped, not averaged in"
+        ],
+        "sum_not_mean": [
+          "equal-sized micro-batches",
+          "uneven micro-batches (dataset not a multiple of batch size)",
+          "empty micro-batches are skipped, not averaged in"
+        ]
+      },
+      "reference_seconds": 0.353,
+      "problems": [],
+      "valid": true
     },
-    "reference_seconds": 0.028,
-    "problems": [],
-    "valid": true
-  },
-  {
-    "task": "04_kv_cache_attention",
-    "title": "KV-cache attention for incremental decoding",
-    "n_checks": 5,
-    "reference_passes": true,
-    "not_flaky": true,
-    "starter_fails": true,
-    "starter_failed_checks": [
-      "at least 3x faster than re-projecting the history (800 steps)"
-    ],
-    "mutants": {
-      "excludes_current_token": [
-        "first step returns that token's value vector",
-        "matches full causal attention at every step",
-        "stable when attention scores are large",
+    {
+      "task": "04_kv_cache_attention",
+      "title": "KV-cache attention for incremental decoding",
+      "n_checks": 5,
+      "reference_passes": true,
+      "not_flaky": true,
+      "starter_fails": true,
+      "starter_failed_checks": [
         "at least 3x faster than re-projecting the history (800 steps)"
       ],
-      "missing_scale": [
-        "matches full causal attention at every step",
-        "at least 3x faster than re-projecting the history (800 steps)"
-      ],
-      "shared_class_state": [
-        "two caches used at the same time do not interfere",
-        "at least 3x faster than re-projecting the history (800 steps)"
-      ],
-      "unstable_softmax": [
-        "stable when attention scores are large",
-        "at least 3x faster than re-projecting the history (800 steps)"
-      ]
+      "mutants": {
+        "excludes_current_token": [
+          "first step returns that token's value vector",
+          "matches full causal attention at every step",
+          "stable when attention scores are large",
+          "at least 3x faster than re-projecting the history (800 steps)"
+        ],
+        "missing_scale": [
+          "matches full causal attention at every step",
+          "at least 3x faster than re-projecting the history (800 steps)"
+        ],
+        "shared_class_state": [
+          "two caches used at the same time do not interfere",
+          "at least 3x faster than re-projecting the history (800 steps)"
+        ],
+        "unstable_softmax": [
+          "stable when attention scores are large",
+          "at least 3x faster than re-projecting the history (800 steps)"
+        ]
+      },
+      "reference_seconds": 3.791,
+      "problems": [],
+      "valid": true
     },
-    "reference_seconds": 0.775,
-    "problems": [],
-    "valid": true
-  },
-  {
-    "task": "05_group_split_leakage",
-    "title": "Leak-free train/validation split",
-    "n_checks": 6,
-    "reference_passes": true,
-    "not_flaky": true,
-    "starter_fails": true,
-    "starter_failed_checks": [
-      "no user appears in both train and validation"
-    ],
-    "mutants": {
-      "lowest_ids_first": [
-        "different seeds give different splits",
-        "user selection does not depend on id order"
-      ],
-      "overlapping_indices": [
-        "train and validation partition the rows exactly",
+    {
+      "task": "05_group_split_leakage",
+      "title": "Leak-free train/validation split",
+      "n_checks": 6,
+      "reference_passes": true,
+      "not_flaky": true,
+      "starter_fails": true,
+      "starter_failed_checks": [
         "no user appears in both train and validation"
       ],
-      "unseeded": [
-        "same seed reproduces the split exactly"
-      ],
-      "user_fraction_not_row_fraction": [
-        "validation size within 0.05 of the requested fraction of rows"
-      ]
+      "mutants": {
+        "lowest_ids_first": [
+          "different seeds give different splits",
+          "user selection does not depend on id order"
+        ],
+        "overlapping_indices": [
+          "train and validation partition the rows exactly",
+          "no user appears in both train and validation"
+        ],
+        "unseeded": [
+          "same seed reproduces the split exactly"
+        ],
+        "user_fraction_not_row_fraction": [
+          "validation size within 0.05 of the requested fraction of rows"
+        ]
+      },
+      "reference_seconds": 0.116,
+      "problems": [],
+      "valid": true
     },
-    "reference_seconds": 0.025,
-    "problems": [],
-    "valid": true
-  },
-  {
-    "task": "06_memory_bounded_distances",
-    "title": "Pairwise distances under a memory budget",
-    "n_checks": 5,
-    "reference_passes": true,
-    "not_flaky": true,
-    "starter_fails": true,
-    "starter_failed_checks": [
-      "peak extra memory under 3x the output size"
-    ],
-    "mutants": {
-      "centers_in_place": [
-        "self-distance ~0 and values accurate far from the origin",
-        "does not modify its inputs"
-      ],
-      "no_centering": [
-        "self-distance ~0 and values accurate far from the origin"
-      ],
-      "no_clamp": [
-        "no negative distances when points are far from the origin"
-      ],
-      "out_of_place_temporaries": [
+    {
+      "task": "06_memory_bounded_distances",
+      "title": "Pairwise distances under a memory budget",
+      "n_checks": 5,
+      "reference_passes": true,
+      "not_flaky": true,
+      "starter_fails": true,
+      "starter_failed_checks": [
         "peak extra memory under 3x the output size"
-      ]
+      ],
+      "mutants": {
+        "centers_in_place": [
+          "self-distance ~0 and values accurate far from the origin",
+          "does not modify its inputs"
+        ],
+        "no_centering": [
+          "self-distance ~0 and values accurate far from the origin"
+        ],
+        "no_clamp": [
+          "no negative distances when points are far from the origin"
+        ],
+        "out_of_place_temporaries": [
+          "peak extra memory under 3x the output size"
+        ]
+      },
+      "reference_seconds": 0.574,
+      "problems": [],
+      "valid": true
     },
-    "reference_seconds": 0.044,
-    "problems": [],
-    "valid": true
-  }
-]
+    {
+      "task": "07_ndcg_ranking_eval",
+      "title": "nDCG@k for ranking and retrieval evaluation",
+      "n_checks": 7,
+      "reference_passes": true,
+      "not_flaky": true,
+      "starter_fails": true,
+      "starter_failed_checks": [
+        "at least 5x faster than a per-query Python loop (Q=2000, N=100)"
+      ],
+      "mutants": {
+        "ideal_from_retrieved": [
+          "matches an independent reference on graded relevance",
+          "tied scores rank the lower document index first",
+          "a query with no relevant documents scores 0.0, not NaN"
+        ],
+        "linear_gain": [
+          "matches an independent reference on graded relevance",
+          "tied scores rank the lower document index first",
+          "a query with no relevant documents scores 0.0, not NaN",
+          "k larger than the number of documents"
+        ],
+        "nan_on_no_relevant": [
+          "tied scores rank the lower document index first",
+          "a query with no relevant documents scores 0.0, not NaN",
+          "k larger than the number of documents"
+        ],
+        "shifted_discount": [
+          "matches an independent reference on graded relevance",
+          "tied scores rank the lower document index first",
+          "a query with no relevant documents scores 0.0, not NaN",
+          "k larger than the number of documents"
+        ],
+        "sorts_labels_in_place": [
+          "does not modify its inputs"
+        ],
+        "ties_to_higher_index": [
+          "tied scores rank the lower document index first"
+        ]
+      },
+      "reference_seconds": 1.083,
+      "problems": [],
+      "valid": true
+    },
+    {
+      "task": "08_leak_free_features",
+      "title": "Leak-free feature preprocessing",
+      "n_checks": 6,
+      "reference_passes": true,
+      "not_flaky": true,
+      "starter_fails": true,
+      "starter_failed_checks": [
+        "matches an independent reference on held-out data",
+        "a row transformed alone equals the same row in a batch (no batch statistics)",
+        "unseen categories become all zeros, never an error"
+      ],
+      "mutants": {
+        "batch_statistics": [
+          "matches an independent reference on held-out data",
+          "a row transformed alone equals the same row in a batch (no batch statistics)",
+          "unseen categories become all zeros, never an error"
+        ],
+        "constant_column_nan": [
+          "a constant column gives finite features"
+        ],
+        "impute_before_stats": [
+          "matches an independent reference on held-out data",
+          "statistics ignore missing values before imputation",
+          "unseen categories become all zeros, never an error",
+          "a constant column gives finite features"
+        ],
+        "imputes_in_place": [
+          "does not modify its inputs"
+        ],
+        "unseen_raises": [
+          "unseen categories become all zeros, never an error"
+        ]
+      },
+      "reference_seconds": 0.405,
+      "problems": [],
+      "valid": true
+    },
+    {
+      "task": "09_tiled_attention",
+      "title": "Tiled attention with online softmax (FlashAttention algorithm)",
+      "n_checks": 6,
+      "reference_passes": true,
+      "not_flaky": true,
+      "starter_fails": true,
+      "starter_failed_checks": [
+        "peak memory at most 50% of the full score matrix (n=m=2000)"
+      ],
+      "mutants": {
+        "drops_last_tile": [
+          "matches full attention across tiles",
+          "any block size: 1, not dividing m, larger than m",
+          "stable when scores are in the thousands"
+        ],
+        "masked_tile_nan": [
+          "a tile whose keys are all masked does not produce NaN"
+        ],
+        "materializes_scores": [
+          "peak memory at most 50% of the full score matrix (n=m=2000)"
+        ],
+        "missing_scale": [
+          "matches full attention across tiles",
+          "any block size: 1, not dividing m, larger than m",
+          "stable when scores are in the thousands",
+          "a tile whose keys are all masked does not produce NaN"
+        ],
+        "no_rescale": [
+          "matches full attention across tiles",
+          "any block size: 1, not dividing m, larger than m",
+          "stable when scores are in the thousands",
+          "a tile whose keys are all masked does not produce NaN"
+        ]
+      },
+      "reference_seconds": 0.59,
+      "problems": [],
+      "valid": true
+    }
+  ]
+}

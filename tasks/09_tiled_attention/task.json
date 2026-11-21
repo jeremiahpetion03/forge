@@ -1,0 +1,6 @@
+{
+  "title": "Tiled attention with online softmax (FlashAttention algorithm)",
+  "difficulty": "hard",
+  "skills": ["attention kernels", "online softmax", "memory traffic", "numerical stability", "masking"],
+  "time_limit_s": 90
+}

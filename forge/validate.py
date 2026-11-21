@@ -19,7 +19,8 @@ import json
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
-from .runner import TASKS_DIR, RunResult, run
+from . import manifest
+from .runner import ROOT, TASKS_DIR, RunResult, run
 
 
 @dataclass
@@ -100,7 +101,7 @@ def validate_all(runs: int = 3, only: list[str] | None = None, verbose: bool = T
     return reports
 
 
-def render_markdown(reports: list[TaskReport], runs: int) -> str:
+def render_markdown(reports: list[TaskReport], runs: int, man: dict | None = None) -> str:
     n_mut = sum(len(r.mutants) for r in reports)
     caught = sum(r.mutants_caught for r in reports)
     lines = [
@@ -122,6 +123,11 @@ def render_markdown(reports: list[TaskReport], runs: int) -> str:
     for r in reports:
         lines.append(f"| {r.title} | {r.n_checks} | {yes[r.reference_passes]} | {yes[r.not_flaky]} | "
                      f"{yes[r.starter_fails]} | {r.mutants_caught}/{len(r.mutants)} |")
+    if man:
+        commit = (man["git_commit"] or "unknown")[:12] + (" + uncommitted changes" if man["git_dirty"] else "")
+        lines += ["", f"Environment: Python {man['python']}, NumPy {man['numpy']}, {man['platform']}; "
+                      f"commit {commit}. Task content hashes are in `validation.json`; "
+                      "`python -m forge check-report` fails if any task changed since this report."]
     lines += ["", "## Which check caught each planted mutant", ""]
     for r in reports:
         lines.append(f"**{r.title}**")
@@ -134,6 +140,8 @@ def render_markdown(reports: list[TaskReport], runs: int) -> str:
 
 
 def write_reports(reports: list[TaskReport], runs: int, out_md: Path, out_json: Path) -> None:
-    out_md.write_text(render_markdown(reports, runs), encoding="utf-8")
-    out_json.write_text(json.dumps([{**asdict(r), "valid": r.valid} for r in reports], indent=2),
-                        encoding="utf-8")
+    dirs = [TASKS_DIR / r.task for r in reports]
+    man = manifest.build(dirs, runs, ROOT)
+    out_md.write_text(render_markdown(reports, runs, man), encoding="utf-8")
+    payload = {"manifest": man, "tasks": [{**asdict(r), "valid": r.valid} for r in reports]}
+    out_json.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
