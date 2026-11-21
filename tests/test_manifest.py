@@ -36,13 +36,21 @@ def test_adding_a_mutant_changes_the_hash(tmp_path):
     assert task_sha256(t) != before
 
 
+def _rewrite_line_endings(task_dir, newline):
+    for p in task_dir.rglob("*"):
+        if p.is_file():
+            lf = p.read_bytes().replace(b"\r\n", b"\n")  # normalize first: the checkout
+            p.write_bytes(lf.replace(b"\n", newline))      # itself may already be CRLF
+
+
 def test_crlf_checkout_hashes_like_lf(tmp_path):
     # Windows git checkouts may convert line endings; the report must not look stale.
     t = copy_task(tmp_path)
-    before = task_sha256(t)
-    for p in t.rglob("*.py"):
-        p.write_bytes(p.read_bytes().replace(b"\n", b"\r\n"))
-    assert task_sha256(t) == before
+    _rewrite_line_endings(t, b"\n")
+    lf = task_sha256(t)
+    _rewrite_line_endings(t, b"\r\n")
+    assert task_sha256(t) == lf
+    assert lf == task_sha256(TASK)  # and both match the task as checked out here
 
 
 def test_stale_detects_edited_added_and_removed_tasks(tmp_path):
