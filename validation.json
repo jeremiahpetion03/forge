@@ -1,10 +1,10 @@
 {
   "manifest": {
     "runs": 10,
-    "python": "3.15.2",
-    "numpy": "2.5.5",
-    "platform": "Windows AMD64",
-    "git_commit": "abcaca57fe40d5d9a12d16564ec427fe465044a9",
+    "python": "3.13.18",
+    "numpy": "2.5.3",
+    "platform": "Linux x86_64",
+    "git_commit": "3089cf248cd28684536dc14bd094de8e3af5e043",
     "git_dirty": true,
     "task_sha256": {
       "01_stable_log_softmax": "70876167915e4d4cceab4a634b583ac92a137ee740c12b93f2ef449a8764cd8d",
@@ -15,7 +15,8 @@
       "06_memory_bounded_distances": "76a5e29d6a361a4d645e180dcc378989adced114168e36270da6f04a341183d7",
       "07_ndcg_ranking_eval": "6a111bd46f80cdce486c4e868c88cbc6110a7840a866f6883c4ad832d6e050ab",
       "08_leak_free_features": "387596b051fbb959786e72476106f89e6ee7498bc528a5ec98efbc9e24864fb5",
-      "09_tiled_attention": "5fca9426c5f13a0417b91b6569ccf601ee48ba74d4bb0ad012d7a2eb3afe15ed"
+      "09_tiled_attention": "5fca9426c5f13a0417b91b6569ccf601ee48ba74d4bb0ad012d7a2eb3afe15ed",
+      "10_first_nonfinite": "9dfc591bbec7f1e8bbdf8149fe6dddc6c91e48ff3bba59bca2e8022d613cad2c"
     }
   },
   "tasks": [
@@ -51,7 +52,7 @@
           "float32 stays float32 and survives logits that overflow exp"
         ]
       },
-      "reference_seconds": 0.35,
+      "reference_seconds": 0.037,
       "problems": [],
       "valid": true
     },
@@ -87,7 +88,7 @@
           "correct when variance is comparable to eps"
         ]
       },
-      "reference_seconds": 0.384,
+      "reference_seconds": 0.034,
       "problems": [],
       "valid": true
     },
@@ -116,7 +117,7 @@
           "empty micro-batches are skipped, not averaged in"
         ]
       },
-      "reference_seconds": 0.353,
+      "reference_seconds": 0.027,
       "problems": [],
       "valid": true
     },
@@ -150,7 +151,7 @@
           "at least 3x faster than re-projecting the history (800 steps)"
         ]
       },
-      "reference_seconds": 3.791,
+      "reference_seconds": 1.068,
       "problems": [],
       "valid": true
     },
@@ -180,7 +181,7 @@
           "validation size within 0.05 of the requested fraction of rows"
         ]
       },
-      "reference_seconds": 0.116,
+      "reference_seconds": 0.029,
       "problems": [],
       "valid": true
     },
@@ -209,7 +210,7 @@
           "peak extra memory under 3x the output size"
         ]
       },
-      "reference_seconds": 0.574,
+      "reference_seconds": 0.05,
       "problems": [],
       "valid": true
     },
@@ -253,7 +254,7 @@
           "tied scores rank the lower document index first"
         ]
       },
-      "reference_seconds": 1.083,
+      "reference_seconds": 0.26,
       "problems": [],
       "valid": true
     },
@@ -291,7 +292,7 @@
           "unseen categories become all zeros, never an error"
         ]
       },
-      "reference_seconds": 0.405,
+      "reference_seconds": 0.053,
       "problems": [],
       "valid": true
     },
@@ -330,7 +331,55 @@
           "a tile whose keys are all masked does not produce NaN"
         ]
       },
-      "reference_seconds": 0.59,
+      "reference_seconds": 0.09,
+      "problems": [],
+      "valid": true
+    },
+    {
+      "task": "10_first_nonfinite",
+      "title": "Locate the first non-finite value in a forward pass",
+      "n_checks": 8,
+      "reference_passes": true,
+      "not_flaky": true,
+      "starter_fails": true,
+      "starter_failed_checks": [
+        "finds the layer that produced inf, not the later one where NaN appears",
+        "stops immediately: later layers never run",
+        "input snapshot is the value before an in-place layer ran",
+        "counts and first position for NaN, +inf and -inf",
+        "returned arrays are copies: later edits cannot change the report",
+        "a non-finite input is reported before any layer runs",
+        "does not modify the caller's input"
+      ],
+      "mutants": {
+        "inf_counted_by_abs": [
+          "finds the layer that produced inf, not the later one where NaN appears",
+          "counts and first position for NaN, +inf and -inf"
+        ],
+        "last_position": [
+          "finds the layer that produced inf, not the later one where NaN appears",
+          "counts and first position for NaN, +inf and -inf"
+        ],
+        "mutates_caller_input": [
+          "does not modify the caller's input"
+        ],
+        "nan_only": [
+          "finds the layer that produced inf, not the later one where NaN appears",
+          "stops immediately: later layers never run",
+          "input snapshot is the value before an in-place layer ran",
+          "returned arrays are copies: later edits cannot change the report"
+        ],
+        "runs_every_layer": [
+          "stops immediately: later layers never run"
+        ],
+        "skips_input_check": [
+          "a non-finite input is reported before any layer runs"
+        ],
+        "snapshot_after_layer": [
+          "input snapshot is the value before an in-place layer ran"
+        ]
+      },
+      "reference_seconds": 0.036,
       "problems": [],
       "valid": true
     }

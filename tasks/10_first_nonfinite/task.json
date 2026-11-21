@@ -1,0 +1,6 @@
+{
+  "title": "Locate the first non-finite value in a forward pass",
+  "difficulty": "medium",
+  "skills": ["numerical debugging", "NaN vs inf", "in-place operations", "instrumentation", "snapshots"],
+  "time_limit_s": 60
+}
